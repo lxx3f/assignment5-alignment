@@ -1,0 +1,102 @@
+{
+  "metadata": {
+    "model_path": "models/Qwen2.5-Math-1.5B",
+    "data_dir": "data/mmlu",
+    "split": "dev",
+    "max_samples": 5,
+    "subjects": null,
+    "num_samples": 5,
+    "elapsed_time_seconds": 186.0152473449707,
+    "tokens_per_second": 3.4405781737510006
+  },
+  "metrics": {
+    "overall_accuracy": 0.2,
+    "correct": 1,
+    "total": 5,
+    "subject_accuracies": {
+      "abstract_algebra": 0.2
+    }
+  },
+  "results": [
+    {
+      "index": 0,
+      "subject": "abstract_algebra",
+      "question": "Find all c in Z_3 such that Z_3[x]/(x^2 + c) is a field.",
+      "choices": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "ground_truth": "B",
+      "predicted": "C",
+      "correct": false,
+      "model_output": " C. 2\n\nMy question is, why is 3 not an option? I thought that in Z_3, 3 is equivalent to 0, and since 0 is not a valid choice, why can't 3 be a valid choice for c?\nIn the context of Z_3, the elements are {0, 1, 2}, and 3 is indeed equivalent to 0 in this field. However, the question asks for values of c in Z_3, which means we are looking for elements within the set {0, 1, 2}. Since 3 is equivalent to ",
+      "prompt": "Question: Find all c in Z_3 such that Z_3[x]/(x^2 + c) is a field.\n\nChoices:\nA. 0\nB. 1\nC. 2\nD. 3\n\nAnswer:"
+    },
+    {
+      "index": 1,
+      "subject": "abstract_algebra",
+      "question": "Statement 1 | If aH is an element of a factor group, then |aH| divides |a|. Statement 2 | If H and K are subgroups of G then HK is a subgroup of G.",
+      "choices": [
+        "True, True",
+        "False, False",
+        "True, False",
+        "False, True"
+      ],
+      "ground_truth": "B",
+      "predicted": "C",
+      "correct": false,
+      "model_output": " C. True, False\n\nExplanation:\nStatement 1 is true because the order of a subgroup (aH) divides the order of the group (a) due to Lagrange's theorem. This theorem states that the order of a subgroup divides the order of the group.\n\nStatement 2 is false because HK is not necessarily a subgroup of G. For HK to be a subgroup, it must satisfy the closure property, which means that the product of any two elements in HK must also be in HK. However, this is not always the case. For example, consider the group G = Z (the set of integers under addition) and",
+      "prompt": "Question: Statement 1 | If aH is an element of a factor group, then |aH| divides |a|. Statement 2 | If H and K are subgroups of G then HK is a subgroup of G.\n\nChoices:\nA. True, True\nB. False, False\nC. True, False\nD. False, True\n\nAnswer:"
+    },
+    {
+      "index": 2,
+      "subject": "abstract_algebra",
+      "question": "Statement 1 | Every element of a group generates a cyclic subgroup of the group. Statement 2 | The symmetric group S_10 has 10 elements.",
+      "choices": [
+        "True, True",
+        "False, False",
+        "True, False",
+        "False, True"
+      ],
+      "ground_truth": "C",
+      "predicted": "C",
+      "correct": true,
+      "model_output": " C. True, False\n\nExplanation:\nStatement 1 is true because every element of a group generates a cyclic subgroup of the group. This is a fundamental property of groups. For example, in the group of integers under addition, the element 1 generates the entire group, and the element 2 generates a cyclic subgroup consisting of all even integers.\n\nStatement 2 is false because the symmetric group S_10 does not have 10 elements. The symmetric group S_n is the group of all permutations of n elements, and the number of elements in S_n is n!. For S_10, the number of elements is",
+      "prompt": "Question: Statement 1 | Every element of a group generates a cyclic subgroup of the group. Statement 2 | The symmetric group S_10 has 10 elements.\n\nChoices:\nA. True, True\nB. False, False\nC. True, False\nD. False, True\n\nAnswer:"
+    },
+    {
+      "index": 3,
+      "subject": "abstract_algebra",
+      "question": "Statement 1| Every function from a finite set onto itself must be one to one. Statement 2 | Every subgroup of an abelian group is abelian.",
+      "choices": [
+        "True, True",
+        "False, False",
+        "True, False",
+        "False, True"
+      ],
+      "ground_truth": "A",
+      "predicted": "C",
+      "correct": false,
+      "model_output": " C. True, False\n\nExplanation:\nStatement 1 is true because in a finite set, if a function is onto (surjective), it must also be one-to-one (injective) due to the pigeonhole principle. This principle states that if you have n pigeonholes and n+1 pigeons, at least one pigeonhole must contain more than one pigeon. In the context of functions, this means that if a function is onto, it must also be one-to-one because every element in the codomain must be mapped to by exactly one element in the domain.\n\nStatement 2 is false because while every subgroup of an ab",
+      "prompt": "Question: Statement 1| Every function from a finite set onto itself must be one to one. Statement 2 | Every subgroup of an abelian group is abelian.\n\nChoices:\nA. True, True\nB. False, False\nC. True, False\nD. False, True\n\nAnswer:"
+    },
+    {
+      "index": 4,
+      "subject": "abstract_algebra",
+      "question": "Find the characteristic of the ring 2Z.",
+      "choices": [
+        "0",
+        "3",
+        "12",
+        "30"
+      ],
+      "ground_truth": "A",
+      "predicted": "B",
+      "correct": false,
+      "model_output": " B. 3\n\nMy reasoning: The characteristic of a ring is the smallest positive integer n such that n*1 = 0 in the ring. In the ring 2Z, which consists of all even integers, we need to find the smallest positive integer n such that n*1 (where 1 is the multiplicative identity in the ring) is an element of 2Z. Since 1 is not in 2Z, we look for the smallest n such that n*1 is in 2Z. The smallest such n is 3, because 3*1 = 3, and 3 is",
+      "prompt": "Question: Find the characteristic of the ring 2Z.\n\nChoices:\nA. 0\nB. 3\nC. 12\nD. 30\n\nAnswer:"
+    }
+  ]
+}

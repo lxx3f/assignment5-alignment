@@ -31,7 +31,8 @@ def run_tokenize_prompt_and_output(
             "response_mask": torch.Tensor of shape (batch_size, max(prompt_and_output_lens) - 1):
                 a mask on the response tokens in `labels`.
     """
-    raise NotImplementedError
+    from cs336_alignment.sft_utils import tokenize_prompt_and_output
+    return tokenize_prompt_and_output(prompt_strs, output_strs, tokenizer)
 
 
 def run_compute_group_normalized_rewards(
@@ -77,12 +78,17 @@ def run_compute_group_normalized_rewards(
                 You may choose what you wish to log here
                 (some statistics of the rewards, etc.).
     """
-    raise NotImplementedError
+    from cs336_alignment.grpo_utils import compute_group_normalized_rewards
+    return compute_group_normalized_rewards(
+        reward_fn, rollout_responses, repeated_ground_truths,
+        group_size, advantage_eps, normalize_by_std
+    )
 
 
 def run_compute_entropy(logits: torch.Tensor) -> torch.Tensor:
     """Get the entropy of the logits (i.e., entropy of the final dimension)."""
-    raise NotImplementedError
+    from cs336_alignment.sft_utils import compute_entropy
+    return compute_entropy(logits)
 
 
 def run_get_response_log_probs(
@@ -114,7 +120,8 @@ def run_get_response_log_probs(
                 we have not masked out the token indices corresponding to the prompt
                 or padding; that is done in the train loop.
     """
-    raise NotImplementedError
+    from cs336_alignment.sft_utils import get_response_log_probs
+    return get_response_log_probs(model, input_ids, labels, return_token_entropy)
 
 
 def run_compute_naive_policy_gradient_loss(
@@ -124,16 +131,17 @@ def run_compute_naive_policy_gradient_loss(
     """Compute policy gradient loss using either raw rewards or advantages.
 
     Args:
-        raw_rewards_or_advantages: torch.Tensor of shape (batch_size, 1): 
+        raw_rewards_or_advantages: torch.Tensor of shape (batch_size, 1):
             the raw rewards or advantages for each rollout response.
-        policy_log_probs: torch.Tensor of shape (batch_size, sequence_length): 
+        policy_log_probs: torch.Tensor of shape (batch_size, sequence_length):
             the log-probs of the policy.
 
     Returns:
-        torch.Tensor of shape (batch_size, sequence_length): 
+        torch.Tensor of shape (batch_size, sequence_length):
             the policy gradient per-token loss.
     """
-    raise NotImplementedError
+    from cs336_alignment.grpo_utils import compute_naive_policy_gradient_loss
+    return compute_naive_policy_gradient_loss(raw_rewards_or_advantages, policy_log_probs)
 
 
 def run_compute_grpo_clip_loss(
@@ -145,22 +153,23 @@ def run_compute_grpo_clip_loss(
     """Compute the GRPO-Clip loss.
 
     Args:
-        advantages: torch.Tensor of shape (batch_size, 1): 
+        advantages: torch.Tensor of shape (batch_size, 1):
             the advantages for each rollout response.
-        policy_log_probs: torch.Tensor of shape (batch_size, sequence_length): 
+        policy_log_probs: torch.Tensor of shape (batch_size, sequence_length):
             the log-probs of the policy.
-        old_log_probs: torch.Tensor of shape (batch_size, sequence_length): 
+        old_log_probs: torch.Tensor of shape (batch_size, sequence_length):
             the log-probs of the old policy.
         cliprange: float, the clip range for the ratio.
 
     Returns:
         tuple[torch.Tensor, dict[str, torch.Tensor]]:
-            torch.Tensor of shape (batch_size, sequence_length): 
+            torch.Tensor of shape (batch_size, sequence_length):
                 the GRPO-Clip per-token loss.
-            dict[str, torch.Tensor]: metadata for the GRPO-Clip loss 
+            dict[str, torch.Tensor]: metadata for the GRPO-Clip loss
                 (used to compute clip fraction).
     """
-    raise NotImplementedError
+    from cs336_alignment.grpo_utils import compute_grpo_clip_loss
+    return compute_grpo_clip_loss(advantages, policy_log_probs, old_log_probs, cliprange)
 
 
 def run_compute_policy_gradient_loss(
@@ -174,7 +183,10 @@ def run_compute_policy_gradient_loss(
     """
     Wrapper that delegates to the appropriate policy gradient loss function above.
     """
-    raise NotImplementedError
+    from cs336_alignment.grpo_utils import compute_policy_gradient_loss
+    return compute_policy_gradient_loss(
+        policy_log_probs, loss_type, raw_rewards, advantages, old_log_probs, cliprange
+    )
 
 
 def run_masked_mean(tensor: torch.Tensor, mask: torch.Tensor, dim: int | None = None) -> torch.Tensor:
@@ -193,7 +205,8 @@ def run_masked_mean(tensor: torch.Tensor, mask: torch.Tensor, dim: int | None = 
         torch.Tensor, the mean of the tensor along the specified
             dimension, considering only the elements with mask value 1.
     """
-    raise NotImplementedError
+    from cs336_alignment.grpo_utils import masked_mean
+    return masked_mean(tensor, mask, dim)
 
 def run_sft_microbatch_train_step(
     policy_log_probs: torch.Tensor,
@@ -203,7 +216,8 @@ def run_sft_microbatch_train_step(
 ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
     """Compute the policy gradient loss and backprop its gradients for a microbatch.
     """
-    raise NotImplementedError
+    from cs336_alignment.sft_utils import sft_microbatch_train_step
+    return sft_microbatch_train_step(policy_log_probs, response_mask, gradient_accumulation_steps, normalize_constant)
 
     
 def run_grpo_microbatch_train_step(
@@ -219,12 +233,12 @@ def run_grpo_microbatch_train_step(
     """Compute the policy gradient loss and backprop its gradients for a microbatch.
 
     Args:
-        policy_log_probs: torch.Tensor of shape (batch_size, sequence_length): 
+        policy_log_probs: torch.Tensor of shape (batch_size, sequence_length):
             the log-probs of the policy.
-        response_mask: torch.Tensor of shape (batch_size, sequence_length): 
+        response_mask: torch.Tensor of shape (batch_size, sequence_length):
             the mask for the response.
         gradient_accumulation_steps: int, the number of gradient accumulation steps.
-        loss_type: Literal["no_baseline", "reinforce_with_baseline", "grpo_clip"], 
+        loss_type: Literal["no_baseline", "reinforce_with_baseline", "grpo_clip"],
             the type of loss function to use.
         raw_rewards: torch.Tensor | None, the raw rewards for each rollout response.
             Needed for loss_type="no_baseline".
@@ -232,17 +246,21 @@ def run_grpo_microbatch_train_step(
             Needed for loss_type in {"reinforce_with_baseline", "grpo_clip"}.
         old_log_probs: torch.Tensor | None, the log-probs of the old policy.
             Needed for loss_type="grpo_clip".
-        cliprange: float | None, the clip range for the ratio. 
+        cliprange: float | None, the clip range for the ratio.
             Needed for loss_type="grpo_clip".
-        constant_normalize_factor: int | None, provided if we want to sum over 
+        constant_normalize_factor: int | None, provided if we want to sum over
             the sequence dimension and normalize by this constant factor
             (as in Dr. GRPO).
 
     Returns:
-        tuple[torch.Tensor, dict[str, torch.Tensor]]: 
+        tuple[torch.Tensor, dict[str, torch.Tensor]]:
             the policy gradient loss and its metadata.
     """
-    raise NotImplementedError
+    from cs336_alignment.grpo_utils import grpo_microbatch_train_step
+    return grpo_microbatch_train_step(
+        policy_log_probs, response_mask, gradient_accumulation_steps,
+        loss_type, raw_rewards, advantages, old_log_probs, cliprange
+    )
 
 
 def run_masked_normalize(
@@ -267,7 +285,8 @@ def run_masked_normalize(
         torch.Tensor, the normalized sum, where masked elements
             (mask=0) don't contribute to the sum.
     """
-    raise NotImplementedError
+    from cs336_alignment.sft_utils import masked_normalize
+    return masked_normalize(tensor, mask, normalize_constant, dim)
 
 
 """
@@ -303,7 +322,13 @@ def get_packed_sft_dataset(
         "input_ids" contains the token IDs for the language modeling inputs, and "labels" contains
         the token IDs for the language modeling labels.
     """
-    raise NotImplementedError
+    from cs336_alignment.data_utils import PackedSFTDataset
+    return PackedSFTDataset(
+        tokenizer=tokenizer,
+        dataset_path=dataset_path,
+        seq_length=seq_length,
+        shuffle=shuffle,
+    )
 
 
 def run_iterate_batches(
@@ -326,7 +351,8 @@ def run_iterate_batches(
     Returns:
         Iterable over batches, where each batch has size `batch_size`.
     """
-    raise NotImplementedError
+    from cs336_alignment.data_utils import iterate_batches
+    return iterate_batches(dataset, batch_size, shuffle)
 
 
 def run_parse_mmlu_response(
@@ -352,7 +378,8 @@ def run_parse_mmlu_response(
         str (one of "A", "B", "C", or "D") if the model output can be parsed into a prediction,
         else None.
     """
-    raise NotImplementedError
+    from cs336_alignment.data_utils import parse_mmlu_response
+    return parse_mmlu_response(mmlu_example, model_output)
 
 
 def run_parse_gsm8k_response(
@@ -369,7 +396,8 @@ def run_parse_gsm8k_response(
         str with the predicted numeric answer if the model output can be parsed into a prediction,
         else None.
     """
-    raise NotImplementedError
+    from cs336_alignment.data_utils import parse_gsm8k_response
+    return parse_gsm8k_response(model_output)
 
 
 def run_compute_per_instance_dpo_loss(
@@ -404,4 +432,7 @@ def run_compute_per_instance_dpo_loss(
     Returns:
         torch.Tensor with the DPO loss for this example.
     """
-    raise NotImplementedError
+    from cs336_alignment.dpo_utils import compute_per_instance_dpo_loss
+    return compute_per_instance_dpo_loss(
+        lm, lm_ref, tokenizer, beta, prompt, response_chosen, response_rejected
+    )

@@ -1017,12 +1017,16 @@ def r1_zero_reward_fn(response, ground_truth, fast=True):
                     "answer_reward": 0.0,
                     "reward": 0.0
                 }
+        # 如果没有 \boxed，直接使用 model_answer 内容（去除首尾空格）
+        # 清理 model_answer（去除首尾空格和换行）
+        model_answer = model_answer.strip()
+
         if isinstance(ground_truth, float) or isinstance(ground_truth, int):
             ground_truth = str(ground_truth)
+        is_correct = False
         if isinstance(ground_truth, str):
             is_correct = grade(model_answer, ground_truth, fast)
         elif isinstance(ground_truth, list):
-            is_correct = False
             for gt in ground_truth:
                 is_correct |= grade(model_answer, gt, fast)
         if is_correct:
